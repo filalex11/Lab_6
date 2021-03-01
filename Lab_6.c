@@ -41,14 +41,14 @@ void swap (char **s1, char **s2) {
 void bubble_sort (list_t *l) {
 	node_t *cur = l->head;
 	node_t *tmp = NULL;
-	char trigger = 1;
-	while (cur || trigger) {
-		trigger = 0;
+	char flag = 1;
+	while (cur || flag) {
+		flag = 0;
 		tmp = cur->next;
 		while (tmp) {
 			if (strcomp(cur->value, tmp->value) > 0) {
 				swap(cur->value, tmp->value);
-				trigger = 1;
+				flag = 1;
 			}
 			tmp = tmp->next;
 		}
@@ -77,12 +77,21 @@ void print (list_t *l) {
 	}
 }
 
+void destroy (list_t *l) {
+	node_t *cur = l->head;
+	node_t *next_t = cur->next;
+	while (next_t) {
+		free(cur);
+		cur = next_t;
+		next_t = cur->next;
+	}
+}
+
 int main () {
-	char a = 0, in_word = 0;
-	int i = 0;
+	char in_word = 0;
+	int i = 0, a = 0;
 	list_t l1, l2;
 	init(&l1);
-	init(&l2);
 	char *word = malloc(128 * sizeof(char));
 	while ((a = getchar()) != '\n') {
 		if (is_letter(a)) {
@@ -105,10 +114,13 @@ int main () {
 	}
 	bubble_sort(&l1);
 	node_t *cur = l1.head;
+	init(&l2);
 	while (cur) {
 		push_front(&l2, cur->value);
 		cur = cur->next;
 	}
+	destroy(&l1);
 	print(&l2);
+	destroy(&l2);
 	return 0;
 }
